@@ -17,7 +17,13 @@ import { useMutation } from "@tanstack/react-query";
 import VideoUploader from "@/components/shared/VideoUploader";
 import { ClipLoader } from "react-spinners";
 
-export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open, setOpen }) {
+export function IdeaPopup({
+  refetchIdeas,
+  ideaData = null,
+  isEdit = false,
+  open,
+  setOpen,
+}) {
   const [uploadedVideo, setUploadedVideo] = useState([]);
   const [uploadedPictures, setUploadedPictures] = useState([]);
   const [uploadedThumbnails, setUploadedThumbnails] = useState([]);
@@ -29,7 +35,7 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
 
   const { register, reset, handleSubmit, formState: { errors } } = useForm();
 
-  // Pre-fill form when editing
+  // ✅ Pre-fill form when editing
   useEffect(() => {
     if (ideaData) {
       reset({
@@ -41,9 +47,32 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
         insertVideo: ideaData.insted_video || "",
       });
 
-      // Optionally prefill files if available
-      // setUploadedPictures([...ideaData.ideaimage]);
-      // setUploadedDocs(ideaData.pdf);
+      // Prefill existing images with id and URL
+      if (ideaData.ideaimage && ideaData.ideaimage.length > 0) {
+        const pictures = ideaData.ideaimage.map((img) => ({
+          id: img.id,
+          preview: img.image,
+          file: null, // existing image
+        }));
+        setUploadedPictures(pictures);
+      }
+
+      // Prefill existing videos
+      if (ideaData.idea_video && ideaData.idea_video.length > 0) {
+        const videos = ideaData.idea_video.map((vid) => ({
+          id: vid.id,
+          preview: vid.video,
+          file: null,
+        }));
+        setUploadedVideo(videos);
+      }
+
+      if (ideaData.pdf) {
+        setUploadedDocs({
+          name: ideaData.pdf.split("/").pop(),
+          url: ideaData.pdf,
+        });
+      }
     } else {
       reset({
         portType: "",
@@ -53,6 +82,10 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
         ideaStage: "",
         insertVideo: "",
       });
+      setUploadedPictures([]);
+      setUploadedVideo([]);
+      setUploadedThumbnails([]);
+      setUploadedDocs(null);
     }
   }, [ideaData, reset]);
 
@@ -60,11 +93,17 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
     mutationFn: async (formData) => {
       if (isEdit) {
         return Axios.post(`/update-idea/${ideaData.id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         });
       } else {
-        return Axios.post("/update-idea", formData, {
-          headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+        return Axios.post("/idea-create", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         });
       }
     },
@@ -76,7 +115,7 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
       setUploadedThumbnails([]);
       setUploadedDocs(null);
       setIsLoading(false);
-      setOpen(false);
+      if (setOpen) setOpen(false);
       refetchIdeas && refetchIdeas();
     },
     onError: (error) => {
@@ -86,17 +125,40 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
     },
   });
 
+  // Delete existing image/video immediately from backend
+  const handleDeleteFile = async (type, id, index) => {
+    try {
+      setIsLoading(true);
+      await Axios.delete(`delete-idea-${type}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success(`${type === "image" ? "Image" : "Video"} deleted successfully`);
+
+      if (type === "image") {
+        setUploadedPictures((prev) => prev.filter((_, i) => i !== index));
+      } else if (type === "video") {
+        setUploadedVideo((prev) => prev.filter((_, i) => i !== index));
+      }
+
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete file");
+      setIsLoading(false);
+    }
+  };
+
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setUploadedPictures((prev) => {
-      const existingFiles = new Set(prev.map((file) => file.name + file.size));
+      const existingFiles = new Set(prev.filter(f => f.file).map(f => f.file.name + f.file.size));
       const uniqueFiles = newFiles.filter((file) => !existingFiles.has(file.name + file.size));
-      return [...prev, ...uniqueFiles];
+      return [...prev, ...uniqueFiles.map(f => ({ file: f, preview: URL.createObjectURL(f) }))];
     });
   };
 
-  const removeImage = (index) => {
-    setUploadedPictures((prev) => prev.filter((_, i) => i !== index));
+  const removeVideoFile = (index) => {
+    setUploadedVideo((prev) => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = (data) => {
@@ -108,10 +170,11 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
     formData.append("industry", data.industry);
     formData.append("idea_stage", data.ideaStage);
     formData.append("insted_video", data.insertVideo);
-    uploadedVideo.forEach((file) => formData.append("video[]", file));
-    uploadedPictures.forEach((file) => formData.append("image[]", file));
+
+    uploadedVideo.forEach((v) => v.file && formData.append("video[]", v.file));
+    uploadedPictures.forEach((p) => p.file && formData.append("image[]", p.file));
     uploadedThumbnails.forEach((file) => formData.append("thumbnail[]", file));
-    if (uploadedDocs) formData.append("pdf", uploadedDocs);
+    if (uploadedDocs && uploadedDocs.file) formData.append("pdf", uploadedDocs.file);
 
     mutate(formData);
   };
@@ -171,7 +234,6 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
               rows={5}
               className="block text-sm w-full px-2 py-2 border outline-none rounded"
               placeholder="We offer after school clubs and enrichment activities..."
-              id="description"
               {...register("description", { required: "Description is required" })}
             />
             {errors.description && <span className="text-red-500 text-sm">{errors.description.message}</span>}
@@ -232,7 +294,7 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
             setUploadedThumbnails={setUploadedThumbnails}
           />
 
-          {/* Picture Upload */}
+          {/* Existing / New Pictures */}
           <div>
             <p className="block font-medium mb-2">Attach a Picture (Optional)</p>
             <label htmlFor="pictureUpload" className="block cursor-pointer w-full">
@@ -252,21 +314,21 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
 
             {uploadedPictures.length > 0 && (
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {uploadedPictures.map((file, index) => (
+                {uploadedPictures.map((item, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={item.preview}
                       alt={`Preview ${index}`}
                       className="max-h-[120px] rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage(index)}
+                      onClick={() => item.id ? handleDeleteFile("image", item.id, index) : removeImage(index)}
                       className="absolute top-1 right-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
                     >
                       <FiX />
                     </button>
-                    <p className="text-xs text-gray-600 mt-1 break-words">{file.name}</p>
+                    {item.file && <p className="text-xs text-gray-600 mt-1 break-words">{item.file.name}</p>}
                   </div>
                 ))}
               </div>
@@ -287,7 +349,7 @@ export function IdeaPopup({ refetchIdeas, ideaData = null, isEdit = false, open,
               type="file"
               accept=".pdf"
               className="hidden"
-              onChange={(e) => setUploadedDocs(e.target.files[0])}
+              onChange={(e) => setUploadedDocs({ file: e.target.files[0], name: e.target.files[0].name })}
             />
             {uploadedDocs && (
               <div className="flex items-center justify-between mt-1 p-2 bg-gray-100 rounded">
