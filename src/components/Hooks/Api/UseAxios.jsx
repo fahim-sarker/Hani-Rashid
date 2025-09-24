@@ -1,15 +1,19 @@
 import axios from "axios";
 
 function useAxios(token = null) {
+  const savedToken = token || JSON.parse(localStorage.getItem("authToken"));
+
   const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(savedToken && { Authorization: `Bearer ${savedToken}` }),
     },
     withCredentials: true,
   });
+
   return axiosInstance;
 }
+
 export default useAxios;
