@@ -35,7 +35,6 @@ const ConsultancyIdeaPost = ({ data }) => {
         console.log("Delete post with id:", data.id);
     };
 
-    // ✅ Map API fields
     const {
         id,
         name,
@@ -49,8 +48,8 @@ const ConsultancyIdeaPost = ({ data }) => {
     } = data;
 
     const thumbnail = ideaimage?.[0]?.image || "https://via.placeholder.com/300x200";
-    const company_logo = "https://via.placeholder.com/80"; // placeholder (no logo in API)
-    const company_name = "User"; // placeholder (API doesn’t provide user/company name)
+    const company_logo = "https://via.placeholder.com/80";
+    const company_name = "User"; 
 
     return (
         <>
