@@ -1,0 +1,19 @@
+[
+    {
+      "id": 1,
+      "author_name": "Joan Doe",
+      "thumbnail": "https://i.ibb.co.com/twsQr8Vx/i1.png",
+      "company_logo": "https://i.ibb.co.com/HTTcY1rt/sony.png",
+      "company_name": "Company Name",
+      "title": "Lighthouse Leadership Consultants 1",
+      "desc": "Unlock Your Business’s True Potential Business growth is not just about revenue; it’s about scaling your vision, building a lasting impact, and staying ahead in a competitive market. Whether you’re just starting or looking to take your business to the next level, these principles can guide you toward sustainable success. Focus on Delivering Value: At the core of every thriving business is the ability to solve real problems. Understand your customers' needs, deliver exceptional solutions, and exceed their expectations. When you create value, you build trust—and trust leads to loyalty. Leverage the Right Tools: Investing in the right tools and technologies is essential for efficiency and scalability. From automation to data-driven insights, the right systems can help streamline processes, improve decision-making, and give you more time to focus on what matters most.",
+      "posted_time": "7 min ago",
+      "more": {
+        "date": "18 Nov, 24",
+        "reach": 1.2,
+        "comment": 500,
+        "offer": 24
+      }
+    }
+  ]
+  

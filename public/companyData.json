@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "company_name": "Company Name",
+        "company_logo": "https://i.ibb.co.com/hxH75QHN/company-logo.png",
+        "posted_time": "7 minutes ago",
+        "desc": "It seems like you are asking for an image related to post management. If you are looking for a visual representation of \"post management,\" it could include concepts like social media management, content scheduling, management, content scheduling. seems like you are asking for an image related to post management. If you are looking for a visual representation of \"post management,\" it could include concepts like social media management, content scheduling, management, content scheduling.",
+        "thumbnail": "https://i.ibb.co.com/27kgJyhy/thumbnail.png",
+        "interaction": { "like": 1.2, "comment": 500, "view": 24, "share": 100 }
+    }
+
+]
