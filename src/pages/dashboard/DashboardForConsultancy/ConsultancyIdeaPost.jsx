@@ -15,7 +15,6 @@ const ConsultancyIdeaPost = ({ data }) => {
     const [openIdeaPopup, setOpenIdeaPopup] = useState(false);
     const menuRef = useRef();
 
-    // close dropdown when clicked outside
     useEffect(() => {
         const handler = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -33,15 +32,30 @@ const ConsultancyIdeaPost = ({ data }) => {
 
     const handleDelete = () => {
         setOpen(false);
-        // 🔴 Replace with delete logic
         console.log("Delete post with id:", data.id);
     };
 
-    const { id, thumbnail, company_logo, company_name, title, desc, more } = data;
+    // ✅ Map API fields
+    const {
+        id,
+        name,
+        description,
+        created_at_diff,
+        likes_count,
+        comments_count,
+        followers_count,
+        ideaimage,
+        pdf,
+    } = data;
+
+    const thumbnail = ideaimage?.[0]?.image || "https://via.placeholder.com/300x200";
+    const company_logo = "https://via.placeholder.com/80"; // placeholder (no logo in API)
+    const company_name = "User"; // placeholder (API doesn’t provide user/company name)
 
     return (
         <>
             <div className="bg-white shadow p-3 sm:p-5 rounded-lg grid lg:grid-cols-12 gap-5 2xl:gap-7">
+                {/* Thumbnail */}
                 <div className="lg:col-span-4 2xl:col-span-3">
                     <figure className="h-[200px] sm:h-[300px] rounded">
                         <img
@@ -51,7 +65,10 @@ const ConsultancyIdeaPost = ({ data }) => {
                         />
                     </figure>
                 </div>
+
+                {/* Content */}
                 <div className="lg:col-span-8 2xl:col-span-9">
+                    {/* Header */}
                     <div className="flex justify-between relative">
                         <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
                             <figure className="w-12 h-12 sm:w-14 sm:h-14 rounded-full">
@@ -64,6 +81,7 @@ const ConsultancyIdeaPost = ({ data }) => {
                             <h3 className="font-medium text-lg sm:text-xl">{company_name}</h3>
                         </div>
 
+                        {/* Dropdown */}
                         <div className="relative" ref={menuRef}>
                             <button
                                 onClick={() => setOpen((prev) => !prev)}
@@ -91,38 +109,49 @@ const ConsultancyIdeaPost = ({ data }) => {
                         </div>
                     </div>
 
+                    {/* Title */}
                     <Link to={`/dashboard/consultancyFirms/ideaDetails/${id}`}>
                         <h3 className="text-[#212B36] font-medium text-lg sm:text-[22px] mb-2">
-                            {title}
+                            {name}
                         </h3>
                     </Link>
+
+                    {/* Description */}
                     <p className="text-[#797676] text-sm sm:text-base mb-3">
-                        {desc.slice(0, 220)}
+                        {description?.slice(0, 220)}
                         <span className="text-xl">........</span>
                     </p>
-                    <button className="flex items-center gap-2 bg-[#E0FFF6] border border-primaryGreen px-3 py-1 text-sm sm:text-base sm:px-4 sm:py-2 rounded-full">
-                        <img src={download} alt="download" />
-                        <span className="text-gray-600">PDF</span>
-                    </button>
+
+                    {/* PDF Button */}
+                    {pdf && (
+                        <button className="flex items-center gap-2 bg-[#E0FFF6] border border-primaryGreen px-3 py-1 text-sm sm:text-base sm:px-4 sm:py-2 rounded-full">
+                            <img src={download} alt="download" />
+                            <span className="text-gray-600">PDF</span>
+                        </button>
+                    )}
+
+                    {/* Stats + Actions */}
                     <div className="flex flex-wrap gap-5 mt-3 sm:mt-5 justify-between items-center">
                         <div className="flex gap-4 sm:gap-5 items-center">
                             <button className="sm:flex hidden bg-[#F4F6FB] px-2 py-1 text-xs sm:px-4 sm:py-2 rounded-full border-gray-100 shadow-sm border gap-1 sm:text-sm text-gray-700 items-center">
                                 <img src={date} alt="" className="w-5 h-5" />
-                                <span>{more.date}</span>
+                                <span>{created_at_diff}</span>
                             </button>
                             <button className="flex bg-[#F4F6FB] px-2 py-1 text-xs sm:px-4 sm:py-2 rounded-full border-gray-100 shadow-sm border gap-1 sm:text-sm text-gray-700 items-center">
                                 <img src={react} alt="" className="w-5 h-5" />
-                                <span>{more.reach}K</span>
+                                <span>{likes_count}</span>
                             </button>
                             <button className="flex bg-[#F4F6FB] px-2 py-1 text-xs sm:px-4 sm:py-2 rounded-full border-gray-100 shadow-sm border gap-1 sm:text-sm text-gray-700 items-center">
                                 <img src={msg} alt="" className="w-5 h-5" />
-                                <span>{more.comment}K</span>
+                                <span>{comments_count}</span>
                             </button>
                             <button className="flex bg-[#F4F6FB] px-2 py-1 text-xs sm:px-4 sm:py-2 rounded-full border-gray-100 shadow-sm border gap-1 sm:text-sm text-gray-700 items-center">
                                 <img src={offers} alt="" className="w-5 h-5" />
-                                <span>{more.offer} offers</span>
+                                <span>{followers_count} offers</span>
                             </button>
                         </div>
+
+                        {/* Buttons */}
                         <div className="flex items-center gap-3">
                             <button className="flex rounded px-3 py-2 text-sm sm:text-base sm:px-4 sm:py-[10px] items-center gap-1 sm:gap-2 bg-primaryGreen text-white">
                                 <img src={watchList} alt="" className="w-5 h-5" />
