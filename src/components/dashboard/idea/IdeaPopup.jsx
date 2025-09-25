@@ -14,7 +14,6 @@ import {
 import useAxios from "@/components/Hooks/Api/UseAxios";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
-import VideoUploader from "@/components/shared/VideoUploader";
 import { ClipLoader } from "react-spinners";
 
 export function IdeaPopup({
@@ -33,7 +32,12 @@ export function IdeaPopup({
   const Axios = useAxios();
   const token = JSON.parse(localStorage.getItem("authToken"));
 
-  const { register, reset, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   // ✅ Pre-fill form when editing
   useEffect(() => {
@@ -47,12 +51,12 @@ export function IdeaPopup({
         insertVideo: ideaData.insted_video || "",
       });
 
-      // Prefill existing images with id and URL
+      // Prefill existing images
       if (ideaData.ideaimage && ideaData.ideaimage.length > 0) {
         const pictures = ideaData.ideaimage.map((img) => ({
           id: img.id,
           preview: img.image,
-          file: null, // existing image
+          file: null,
         }));
         setUploadedPictures(pictures);
       }
@@ -125,7 +129,7 @@ export function IdeaPopup({
     },
   });
 
-  // Delete existing image/video immediately from backend
+  // ✅ Delete image/video from backend
   const handleDeleteFile = async (type, id, index) => {
     try {
       setIsLoading(true);
@@ -151,15 +155,34 @@ export function IdeaPopup({
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setUploadedPictures((prev) => {
-      const existingFiles = new Set(prev.filter(f => f.file).map(f => f.file.name + f.file.size));
-      const uniqueFiles = newFiles.filter((file) => !existingFiles.has(file.name + file.size));
-      return [...prev, ...uniqueFiles.map(f => ({ file: f, preview: URL.createObjectURL(f) }))];
+      const existingFiles = new Set(
+        prev.filter((f) => f.file).map((f) => f.file.name + f.file.size)
+      );
+      const uniqueFiles = newFiles.filter(
+        (file) => !existingFiles.has(file.name + file.size)
+      );
+      return [
+        ...prev,
+        ...uniqueFiles.map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
+      ];
     });
   };
 
-  // const removeVideoFile = (index) => {
-  //   setUploadedVideo((prev) => prev.filter((_, i) => i !== index));
-  // };
+  const handleVideoChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setUploadedVideo((prev) => {
+      const existingFiles = new Set(
+        prev.filter((f) => f.file).map((f) => f.file.name + f.file.size)
+      );
+      const uniqueFiles = newFiles.filter(
+        (file) => !existingFiles.has(file.name + file.size)
+      );
+      return [
+        ...prev,
+        ...uniqueFiles.map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
+      ];
+    });
+  };
 
   const onSubmit = (data) => {
     setIsLoading(true);
@@ -206,17 +229,23 @@ export function IdeaPopup({
               className="block w-full px-2 py-2 border outline-none rounded"
               {...register("portType", { required: "Port type is required" })}
             >
-              <option value="" disabled>Select Port Type</option>
+              <option value="" disabled>
+                Select Port Type
+              </option>
               <option value="Type 1">Type 1</option>
               <option value="Type 2">Type 2</option>
               <option value="Type 3">Type 3</option>
             </select>
-            {errors.portType && <span className="text-red-500 text-sm">{errors.portType.message}</span>}
+            {errors.portType && (
+              <span className="text-red-500 text-sm">{errors.portType.message}</span>
+            )}
           </div>
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block font-medium mb-2">Name</label>
+            <label htmlFor="name" className="block font-medium mb-2">
+              Name
+            </label>
             <input
               id="name"
               type="text"
@@ -224,19 +253,25 @@ export function IdeaPopup({
               placeholder="After school enrichment activities"
               className="block w-full px-2 py-2 border outline-none rounded"
             />
-            {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
+            {errors.name && (
+              <span className="text-red-500 text-sm">{errors.name.message}</span>
+            )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block font-medium mb-2">Idea Description</label>
+            <label htmlFor="description" className="block font-medium mb-2">
+              Idea Description
+            </label>
             <textarea
               rows={5}
               className="block text-sm w-full px-2 py-2 border outline-none rounded"
               placeholder="We offer after school clubs and enrichment activities..."
               {...register("description", { required: "Description is required" })}
             />
-            {errors.description && <span className="text-red-500 text-sm">{errors.description.message}</span>}
+            {errors.description && (
+              <span className="text-red-500 text-sm">{errors.description.message}</span>
+            )}
           </div>
 
           {/* Industry */}
@@ -247,12 +282,16 @@ export function IdeaPopup({
               className="block w-full px-2 py-2 border outline-none rounded"
               {...register("industry", { required: "Industry is required" })}
             >
-              <option value="" disabled>Select Industry</option>
+              <option value="" disabled>
+                Select Industry
+              </option>
               <option value="Industry 1">Industry 1</option>
               <option value="Industry 2">Industry 2</option>
               <option value="Industry 3">Industry 3</option>
             </select>
-            {errors.industry && <span className="text-red-500 text-sm">{errors.industry.message}</span>}
+            {errors.industry && (
+              <span className="text-red-500 text-sm">{errors.industry.message}</span>
+            )}
           </div>
 
           {/* Idea Stage */}
@@ -263,17 +302,23 @@ export function IdeaPopup({
               className="block w-full px-2 py-2 border outline-none rounded"
               {...register("ideaStage", { required: "Idea stage is required" })}
             >
-              <option value="" disabled>Select Idea Stage</option>
+              <option value="" disabled>
+                Select Idea Stage
+              </option>
               <option value="Stage 1">Stage 1</option>
               <option value="Stage 2">Stage 2</option>
               <option value="Stage 3">Stage 3</option>
             </select>
-            {errors.ideaStage && <span className="text-red-500 text-sm">{errors.ideaStage.message}</span>}
+            {errors.ideaStage && (
+              <span className="text-red-500 text-sm">{errors.ideaStage.message}</span>
+            )}
           </div>
 
           {/* Video Link */}
           <div>
-            <label htmlFor="insertVideo" className="block font-medium mb-2">Insert Video</label>
+            <label htmlFor="insertVideo" className="block font-medium mb-2">
+              Insert Video
+            </label>
             <div className="relative">
               <input
                 id="insertVideo"
@@ -286,13 +331,56 @@ export function IdeaPopup({
             </div>
           </div>
 
-          {/* Video Uploader */}
-          <VideoUploader
-            uploadedVideo={uploadedVideo}
-            setUploadedVideo={setUploadedVideo}
-            uploadedThumbnails={uploadedThumbnails}
-            setUploadedThumbnails={setUploadedThumbnails}
-          />
+          {/* Video Upload */}
+          <div>
+            <p className="block font-medium mb-2">Attach Videos (Optional)</p>
+            <label htmlFor="videoUpload" className="block cursor-pointer w-full">
+              <div className="text-center border bg-[#def9f1] py-2 rounded">
+                <img src={uploadLogo} alt="Upload" className="mx-auto w-7 h-7" />
+                <p className="text-xs text-gray-500 mt-1">Click to upload</p>
+              </div>
+            </label>
+            <input
+              id="videoUpload"
+              type="file"
+              accept="video/*"
+              multiple
+              className="hidden"
+              onChange={handleVideoChange}
+            />
+
+            {uploadedVideo.length > 0 && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {uploadedVideo.map((item, index) => (
+                  <div key={index} className="relative">
+                    <video
+                      src={item.preview}
+                      controls
+                      className="w-[200px] h-[200px] rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        item.id
+                          ? handleDeleteFile("video", item.id, index)
+                          : setUploadedVideo((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          )
+                      }
+                      className="absolute top-1 left-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
+                    >
+                      <FiX />
+                    </button>
+                    {item.file && (
+                      <p className="text-xs text-gray-600 mt-1 break-words">
+                        {item.file.name}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Existing / New Pictures */}
           <div>
@@ -323,12 +411,22 @@ export function IdeaPopup({
                     />
                     <button
                       type="button"
-                      onClick={() => item.id ? handleDeleteFile("image", item.id, index) : (index)}
+                      onClick={() =>
+                        item.id
+                          ? handleDeleteFile("image", item.id, index)
+                          : setUploadedPictures((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          )
+                      }
                       className="absolute top-1 left-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
                     >
                       <FiX />
                     </button>
-                    {item.file && <p className="text-xs text-gray-600 mt-1 break-words">{item.file.name}</p>}
+                    {item.file && (
+                      <p className="text-xs text-gray-600 mt-1 break-words">
+                        {item.file.name}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -349,7 +447,12 @@ export function IdeaPopup({
               type="file"
               accept=".pdf"
               className="hidden"
-              onChange={(e) => setUploadedDocs({ file: e.target.files[0], name: e.target.files[0].name })}
+              onChange={(e) =>
+                setUploadedDocs({
+                  file: e.target.files[0],
+                  name: e.target.files[0].name,
+                })
+              }
             />
             {uploadedDocs && (
               <div className="flex items-center justify-between mt-1 p-2 bg-gray-100 rounded">
@@ -376,7 +479,13 @@ export function IdeaPopup({
               type="submit"
               className="bg-primaryGreen text-white px-8 py-2 font-medium rounded-[6px] flex items-center justify-center min-h-full min-w-[110px]"
             >
-              {isLoading ? <ClipLoader color="#ffffff" size={18} /> : isEdit ? "Update Idea" : "Create Idea"}
+              {isLoading ? (
+                <ClipLoader color="#ffffff" size={18} />
+              ) : isEdit ? (
+                "Update Idea"
+              ) : (
+                "Create Idea"
+              )}
             </button>
           </div>
         </form>
