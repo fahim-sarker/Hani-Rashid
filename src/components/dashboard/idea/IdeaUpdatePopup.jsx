@@ -25,8 +25,6 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // console.log(ideaDetails);
-
   const [uploadedVideo, setUploadedVideo] = useState([]);
   const [uploadedPictures, setUploadedPictures] = useState([]);
   const [uploadedThumbnails, setUploadedThumbnails] = useState([]);
@@ -302,7 +300,7 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
             </div>
 
             {/* Video Upload */}
-            {/* <div>
+            <div>
                   <p className="block font-medium mb-2">Attach Videos (Optional)</p>
                   <label
                     htmlFor="videoUpload"
@@ -343,7 +341,7 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
                       ))}
                     </div>
                   )}
-                </div> */}
+                </div>
             <VideoUploader
               uploadedVideo={uploadedVideo}
               setUploadedVideo={setUploadedVideo}

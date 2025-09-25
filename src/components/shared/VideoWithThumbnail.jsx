@@ -1,20 +1,19 @@
 import { useState } from "react";
 import dummyThumbnail from "@/assets/dummy-thumbnail.jpg";
-import { cn } from "@/lib/utils";
 
 const VideoWithThumbnail = ({ item, adjustable = false }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
   return (
     <div className="relative w-full h-full">
       {!isPlaying ? (
         <div
-          className={`relative h-full ${
-            adjustable ? "w-full" : "aspect-video"
-          } cursor-pointer`}
+          className={`relative cursor-pointer w-full ${adjustable ? "h-full" : "aspect-video"}`}
           onClick={() => setIsPlaying(true)}
         >
+          {/* Always use the static thumbnail */}
           <img
-            src={item.thumbnail || dummyThumbnail}
+            src={dummyThumbnail}
             alt="Video Thumbnail"
             className="w-full h-full object-cover object-center"
           />
@@ -36,9 +35,7 @@ const VideoWithThumbnail = ({ item, adjustable = false }) => {
           autoPlay
           playsInline
           muted
-          className={`h-full ${
-            adjustable ? "w-full" : "aspect-video"
-          } object-cover object-center`}
+          className="w-full h-full object-cover object-center"
           preload="metadata"
         >
           Your browser does not support the video tag.
