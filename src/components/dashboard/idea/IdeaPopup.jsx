@@ -157,9 +157,9 @@ export function IdeaPopup({
     });
   };
 
-  const removeVideoFile = (index) => {
-    setUploadedVideo((prev) => prev.filter((_, i) => i !== index));
-  };
+  // const removeVideoFile = (index) => {
+  //   setUploadedVideo((prev) => prev.filter((_, i) => i !== index));
+  // };
 
   const onSubmit = (data) => {
     setIsLoading(true);
