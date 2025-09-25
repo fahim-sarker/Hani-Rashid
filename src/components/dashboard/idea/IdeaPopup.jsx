@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import useAxios from "@/components/Hooks/Api/UseAxios";
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ClipLoader } from "react-spinners";
 
 export function IdeaPopup({
@@ -22,13 +22,14 @@ export function IdeaPopup({
   isEdit = false,
   open,
   setOpen,
+
 }) {
   const [uploadedVideo, setUploadedVideo] = useState([]);
   const [uploadedPictures, setUploadedPictures] = useState([]);
   const [uploadedThumbnails, setUploadedThumbnails] = useState([]);
   const [uploadedDocs, setUploadedDocs] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const queryClient = useQueryClient();
   const Axios = useAxios();
   const token = JSON.parse(localStorage.getItem("authToken"));
 
@@ -121,6 +122,8 @@ export function IdeaPopup({
       setIsLoading(false);
       if (setOpen) setOpen(false);
       refetchIdeas && refetchIdeas();
+      queryClient.invalidateQueries(['/show-all-idea']);
+
     },
     onError: (error) => {
       console.log(error);

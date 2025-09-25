@@ -19,6 +19,8 @@ const ConsultancyIdeaPost = ({ data, refetchIdeas }) => {
     const menuRef = useRef();
     const Axios = useAxios();
 
+    console.log("hello data", data);
+
     useEffect(() => {
         const handler = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -177,6 +179,7 @@ const ConsultancyIdeaPost = ({ data, refetchIdeas }) => {
                     setOpen={setOpenIdeaPopup}
                     ideaData={data}
                     refetchIdeas={refetchIdeas}
+
                 />
             )}
         </>

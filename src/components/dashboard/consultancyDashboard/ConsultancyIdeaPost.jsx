@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import share from "../../../assets/icons/share.png";
 import eye from "../../../assets/icons/eye.png";
 import likeImg from "../../../assets/icons/like.png";
@@ -23,8 +23,7 @@ const IdeaPost = () => {
   const [showComments, setShowComments] = useState({});
   const [like, setLike] = useState(false);
   const token = JSON.parse(localStorage.getItem("authToken"));
-  const { data: fetchedIdeas } = useFetchData("/show-all-idea", token);
-  const [ideas, setIdeas] = useState([]);
+  const { data: fetchedIdeas, refetch } = useFetchData("/show-all-idea", token);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [ideaData, setIdeaData] = useState(null);
   const [ideaId, setIdeaId] = useState(null);
@@ -32,11 +31,11 @@ const IdeaPost = () => {
   const { data } = useFetchData("/me", token);
   const Axios = useAxios();
 
-  useEffect(() => {
-    if (fetchedIdeas?.data) {
-      setIdeas(fetchedIdeas.data);
-    }
-  }, [fetchedIdeas]);
+  // useEffect(() => {
+  //   if (fetchedIdeas?.data) {
+  //     setIdeas(fetchedIdeas.data);
+  //   }
+  // }, [fetchedIdeas]);
 
   const handleLike = async (id) => {
     try {
@@ -66,7 +65,7 @@ const IdeaPost = () => {
 
   return (
     <>
-      {ideas?.map((item) => {
+      {fetchedIdeas?.data?.map((item) => {
         const isExpanded = expandedItem === item.id;
         const shouldTruncate = item?.description?.length > 350;
 
@@ -79,6 +78,7 @@ const IdeaPost = () => {
           item?.type === "shared"
             ? item?.share_ideas_owner?.name
             : data?.data?.name;
+        // console.log("timeline item", item);
 
         return (
           <div key={item.id} className="mb-10">
@@ -314,6 +314,7 @@ const IdeaPost = () => {
           setIsOpenPopup={setIsOpenPopup}
           ideaData={ideaData}
           id={ideaId}
+          refetch={refetch}
         />
       )}
     </>

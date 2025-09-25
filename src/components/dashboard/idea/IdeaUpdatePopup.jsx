@@ -1,4 +1,4 @@
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FiLink, FiX } from "react-icons/fi";
 import uploadLogo from "../../../assets/icons/uploadLogo.png";
 import { useEffect, useState } from "react";
@@ -57,6 +57,7 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
         }
       );
       queryClient.invalidateQueries([`/idea-details/${id}`]);
+
       console.log("image deleted successfully:", response.data);
     } catch (error) {
       console.error("Error deleting image:", error);
@@ -125,9 +126,7 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
         },
       });
     },
-    onSuccess: (data) => {
-      // console.log(data);
-
+    onSuccess: () => {
       setIsOpenPopup(false);
       toast.success("Idea Updated successfully");
       reset();
@@ -136,6 +135,7 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
       setUploadedPictures([]);
       setUploadedDocs(null);
       queryClient.invalidateQueries([`/idea-details/${id}`]);
+      queryClient.invalidateQueries(['/show-all-idea']);
       setIsUpdating(false);
     },
     onError: (error) => {
@@ -301,47 +301,47 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
 
             {/* Video Upload */}
             <div>
-                  <p className="block font-medium mb-2">Attach Videos (Optional)</p>
-                  <label
-                    htmlFor="videoUpload"
-                    className="block cursor-pointer w-full"
-                  >
-                    <div className="text-center border bg-[#def9f1] py-2 rounded">
-                      <img
-                        src={uploadLogo}
-                        alt="Upload"
-                        className="mx-auto w-7 h-7"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Click to upload</p>
-                    </div>
-                  </label>
-                  <input
-                    id="videoUpload"
-                    type="file"
-                    accept="video/*"
-                    multiple
-                    className="hidden"
-                    onChange={handleVideoChange}
+              <p className="block font-medium mb-2">Attach Videos (Optional)</p>
+              <label
+                htmlFor="videoUpload"
+                className="block cursor-pointer w-full"
+              >
+                <div className="text-center border bg-[#def9f1] py-2 rounded">
+                  <img
+                    src={uploadLogo}
+                    alt="Upload"
+                    className="mx-auto w-7 h-7"
                   />
-                  {uploadedVideo?.length > 0 && (
-                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {uploadedVideo.map((file, index) => (
-                        <div key={index} className="relative">
-                          <p className="text-sm text-gray-600 truncate">
-                            {file.name}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => removeVideo(index)}
-                            className="absolute top-1 right-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
-                          >
-                            <FiX />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <p className="text-xs text-gray-500 mt-1">Click to upload</p>
                 </div>
+              </label>
+              <input
+                id="videoUpload"
+                type="file"
+                accept="video/*"
+                multiple
+                className="hidden"
+
+              />
+              {uploadedVideo?.length > 0 && (
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {uploadedVideo.map((file, index) => (
+                    <div key={index} className="relative">
+                      <p className="text-sm text-gray-600 truncate">
+                        {file.name}
+                      </p>
+                      <button
+                        type="button"
+
+                        className="absolute top-1 right-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <VideoUploader
               uploadedVideo={uploadedVideo}
               setUploadedVideo={setUploadedVideo}
@@ -378,10 +378,9 @@ export function IdeaUpdatePopup({ isOpenPopup, setIsOpenPopup, id }) {
               />
 
               <div
-                className={`${
-                  (uploadedPictures.length > 0 || previousImg?.length > 0) &&
+                className={`${(uploadedPictures.length > 0 || previousImg?.length > 0) &&
                   "mt-4"
-                } grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`}
+                  } grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`}
               >
                 {previousImg.length > 0 && (
                   <>

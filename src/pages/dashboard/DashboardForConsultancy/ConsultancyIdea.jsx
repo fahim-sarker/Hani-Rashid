@@ -6,7 +6,7 @@ import useAxios from "@/components/Hooks/Api/UseAxios";
 
 const ConsultancyIdea = () => {
     const axiosInstance = useAxios();
-    const [open, setOpen] = useState(false); // ✅ control popup state
+    const [open, setOpen] = useState(false);
 
     const { data: consultancyIdeaData, isLoading, refetch } = useQuery({
         queryKey: ["consultancyIdeaData"],
