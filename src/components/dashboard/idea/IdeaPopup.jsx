@@ -313,18 +313,18 @@ export function IdeaPopup({
             />
 
             {uploadedPictures.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-1">
                 {uploadedPictures.map((item, index) => (
                   <div key={index} className="relative">
                     <img
                       src={item.preview}
                       alt={`Preview ${index}`}
-                      className="max-h-[120px] rounded"
+                      className="max-h-[120px] w-[120px] h-full rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => item.id ? handleDeleteFile("image", item.id, index) : removeImage(index)}
-                      className="absolute top-1 right-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
+                      onClick={() => item.id ? handleDeleteFile("image", item.id, index) : (index)}
+                      className="absolute top-1 left-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 shadow"
                     >
                       <FiX />
                     </button>
