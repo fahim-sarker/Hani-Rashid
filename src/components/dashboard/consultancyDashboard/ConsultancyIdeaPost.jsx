@@ -151,7 +151,7 @@ const IdeaPost = () => {
               ))}
             </div> */}
 
-              <div className="mb-5 sm:mb-7">
+              <div className="mb-5 sm:mb-7 flex flwx-wrap">
                 {item?.ideaimage?.length + item?.idea_video?.length === 1 ? (
                   <figure className="rounded overflow-hidden h-[380px] w-fit">
                     {item.ideaimage[0] ? (
@@ -170,7 +170,7 @@ const IdeaPost = () => {
                       (media, index) => (
                         <figure
                           key={index}
-                          className="rounded overflow-hidden w-fit shrink-0 h-[380px]"
+                          className="rounded overflow-hidden w-fit shrink-0 h-[300px]"
                         >
                           {"image" in media ? (
                             <img
@@ -227,8 +227,8 @@ const IdeaPost = () => {
                               )}
                               {index === 1 &&
                                 item?.ideaimage?.length +
-                                  item?.idea_video?.length >
-                                  3 && (
+                                item?.idea_video?.length >
+                                3 && (
                                   <div
                                     className="overlay absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center text-white text-2xl md:text-3xl lg:text-5xl font-bold cursor-pointer"
                                     onClick={() => {
