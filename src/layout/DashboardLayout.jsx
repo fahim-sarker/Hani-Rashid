@@ -71,7 +71,7 @@ const DashboardLayout = () => {
       } else {
         toast.error("Logout failed. Please try again.");
       }
-      
+
     }
   };
 
@@ -84,7 +84,7 @@ const DashboardLayout = () => {
           <img src={logo} alt="logo" className="w-48 mx-auto" />
         </Link>
         {/* Profile card */}
-        {location.pathname === "/dashboard/smallBusiness/timeline" && (
+        {/* {location.pathname === "/dashboard/smallBusiness/timeline" && (
           <div className="flex mt-8 px-3 py-1 max-w-[210px] ms-auto gap-3 bg-white rounded-tl rounded-bl shadow items-center">
             <figure className="w-10 h-10 rounded-full border-2">
               <img
@@ -99,7 +99,7 @@ const DashboardLayout = () => {
               </span>
             </div>
           </div>
-        )}
+        )} */}
         {/* links */}
 
         <ul
