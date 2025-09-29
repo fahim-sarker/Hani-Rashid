@@ -39,7 +39,6 @@ const DashboardLayout = () => {
   const role = JSON.parse(localStorage.getItem("role"));
 
   const { data } = useFetchData("/me", token);
-  console.log("jsagdehasgf", data?.data?.avatar);
 
   const handleLogout = async () => {
     const token = JSON.parse(localStorage.getItem("authToken"));
@@ -64,6 +63,15 @@ const DashboardLayout = () => {
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Logout failed. Please try again.");
+
+      if (error?.response?.status === 401) {
+        localStorage.removeItem("authToken");
+        toast.error("Session expired. Please log in again.");
+        navigate("/auth/login");
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
+      
     }
   };
 
@@ -72,7 +80,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="hidden xl:block min-h-full max-h-full overflow-y-auto w-[280px] xl:w-[300px] py-8 2xl:py-10 shadow bg-[#0B2948] text-white">
         {/* Logo */}
-        <Link to={ role === "smallbusiness" ? "/dashboard/smallBusiness/timeline" : "/dashboard/consultancyFirms/timeline" }>
+        <Link to={role === "smallbusiness" ? "/dashboard/smallBusiness/timeline" : "/dashboard/consultancyFirms/timeline"}>
           <img src={logo} alt="logo" className="w-48 mx-auto" />
         </Link>
         {/* Profile card */}
@@ -272,11 +280,11 @@ const DashboardLayout = () => {
               )}
               <figure className="w-10 h-10 outline outline-2 outline-primaryGreen outline-offset-2 rounded-full">
                 <Link to='/dashboard/smallBusiness/editProfile'>
-                <img
-                  src={data?.data?.avatar ? data?.data?.avatar : Defaultprofile }
-                  alt=""
-                  className="w-full h-full rounded-full object-cover"
-                />
+                  <img
+                    src={data?.data?.avatar ? data?.data?.avatar : Defaultprofile}
+                    alt=""
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 </Link>
               </figure>
               <p className="font-roboto font-medium text-[#334155]">
