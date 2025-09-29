@@ -52,7 +52,6 @@ const DashboardLayout = () => {
       }
       await Axiosinstance.post(
         "logout",
-        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
