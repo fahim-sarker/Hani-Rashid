@@ -4,7 +4,7 @@ import {
   NavLink,
   Outlet,
   ScrollRestoration,
-  useLocation,
+  // useLocation,
   useNavigate,
 } from "react-router-dom";
 import logo from "../assets/logoBottom.png";
@@ -30,7 +30,7 @@ import useFetchData from "@/components/Hooks/Api/UseFetchData";
 import Defaultprofile from "../assets/icons/defaultprofile.jpg"
 
 const DashboardLayout = () => {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
   const Axiosinstance = useAxios();
   const [isActive, setIsActive] = useState(false);
