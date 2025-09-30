@@ -10,7 +10,6 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { ImSpinner3 } from "react-icons/im";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import PasswordStrengthBar from "react-password-strength-bar";
 
@@ -20,34 +19,48 @@ export function PasswordChangePopup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitted },
+    reset,
+    formState: { errors, isSubmitting },
     getValues,
   } = useForm();
-  const password = watch("password");
-  const token = JSON.parse(localStorage.getItem("authToken"));
 
-  console.log(token);
+  const password = watch("password");
+  const token = typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem("authToken") || "null")
+    : null;
 
   const onSubmit = async (data) => {
-    console.log(data);
-
     try {
-      let response = await Axiosinstance.post("change-password", data, {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await Axiosinstance.post(
+        "change-password",
+        {
+          current_password: data.current_password,
+          password: data.password,
+          password_confirmation: data.password_confirmation,
         },
-      });
-      console.log(response);
-      toast.success("Password changed successfully");
-      setOpen(false);
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      if (response?.status === 200) {
+        toast.success("Password changed successfully");
+        reset();
+        setOpen(false);
+      }
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to change password");
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Failed to change password"
+      );
     }
   };
 
@@ -58,6 +71,7 @@ export function PasswordChangePopup() {
           Change Password
         </button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[797px]">
         <DialogHeader>
           <DialogTitle className="text-3xl text-center block">
@@ -69,21 +83,16 @@ export function PasswordChangePopup() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Old password field */}
+          {/* Old password */}
           <div className="mb-4">
-            <label
-              htmlFor="current_password"
-              className="text-lg block font-medium mb-2"
-            >
+            <label htmlFor="current_password" className="text-lg block font-medium mb-2">
               Old Password
             </label>
             <div className="relative">
               <input
                 id="current_password"
                 type={showOldPassword ? "text" : "password"}
-                {...register("current_password", {
-                  required: "Old Password is required",
-                })}
+                {...register("current_password", { required: "Old Password is required" })}
                 placeholder="Password here"
                 className="bg-transparent outline-none border p-3 mb-2 rounded block w-full border-gray-300"
               />
@@ -91,38 +100,26 @@ export function PasswordChangePopup() {
                 onClick={() => setShowOldPassword(!showOldPassword)}
                 className="absolute cursor-pointer right-4 top-4"
               >
-                {showOldPassword ? (
-                  <IoEyeOutline className="text-xl" />
-                ) : (
-                  <IoEyeOffOutline className="text-xl" />
-                )}
+                {showOldPassword ? <IoEyeOutline className="text-xl" /> : <IoEyeOffOutline className="text-xl" />}
               </span>
             </div>
-            {errors.current_password && (
-              <span className="text-red-500">
-                {errors.current_password.message}
-              </span>
-            )}
+            {errors.current_password && <span className="text-red-500">{errors.current_password.message}</span>}
           </div>
 
-          {/* New password field */}
+          {/* New password */}
           <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="text-lg block font-medium mb-2"
-            >
+            <label htmlFor="password" className="text-lg block font-medium mb-2">
               New Password
             </label>
             <div className="relative">
               <input
-                id="Password"
+                id="password"
                 type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: "Password is required",
                   pattern: {
                     value: /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}/,
-                    message:
-                      "Password must be 6-15 characters long, include at least one uppercase letter, one lowercase letter, and one number.",
+                    message: "Password must be 6-15 characters, include uppercase, lowercase, and a number.",
                   },
                 })}
                 placeholder="Password here"
@@ -132,24 +129,15 @@ export function PasswordChangePopup() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute cursor-pointer right-4 top-4"
               >
-                {showPassword ? (
-                  <IoEyeOutline className="text-xl" />
-                ) : (
-                  <IoEyeOffOutline className="text-xl" />
-                )}
+                {showPassword ? <IoEyeOutline className="text-xl" /> : <IoEyeOffOutline className="text-xl" />}
               </span>
             </div>
-            {errors.Password && (
-              <span className="text-red-500">{errors.password.message}</span>
-            )}
+            {errors.password && <span className="text-red-500">{errors.password.message}</span>}
           </div>
 
-          {/* Confirm password field */}
-          <div>
-            <label
-              htmlFor="password_confirmation"
-              className="text-lg block font-medium mb-2"
-            >
+          {/* Confirm password */}
+          <div className="mb-4">
+            <label htmlFor="password_confirmation" className="text-lg block font-medium mb-2">
               Confirm Password
             </label>
             <div className="relative">
@@ -158,46 +146,33 @@ export function PasswordChangePopup() {
                 type={showConfirmPassword ? "text" : "password"}
                 {...register("password_confirmation", {
                   required: "Confirm Password is required",
-                  validate: (value) =>
-                    value === getValues("password") || "Passwords do not match",
+                  validate: (value) => value === getValues("password") || "Passwords do not match",
                 })}
                 placeholder="Password here"
                 className="bg-transparent outline-none border p-3 mb-2 rounded block w-full border-gray-300"
               />
-
               <span
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute cursor-pointer right-4 top-4"
               >
-                {showConfirmPassword ? (
-                  <IoEyeOutline className="text-xl" />
-                ) : (
-                  <IoEyeOffOutline className="text-xl" />
-                )}
+                {showConfirmPassword ? <IoEyeOutline className="text-xl" /> : <IoEyeOffOutline className="text-xl" />}
               </span>
             </div>
-            {errors.password_confirmation && (
-              <span className="text-red-500">
-                {errors.password_confirmation.message}
-              </span>
-            )}
+            {errors.password_confirmation && <span className="text-red-500">{errors.password_confirmation.message}</span>}
           </div>
 
-          {/* Password Strength Bar */}
+          {/* Password strength bar */}
           <div className="w-full pt-2">
             <PasswordStrengthBar className="strengthBar" password={password} />
           </div>
 
-          {/* Submit button */}
+          {/* Submit */}
           <button
             type="submit"
             className="px-5 w-full block mt-5 mx-auto py-3 text-center rounded shadow bg-primaryGreen text-white"
+            disabled={isSubmitting}
           >
-            {isSubmitted ? (
-              <ImSpinner3 className="animate-spin text-xl fill-white" />
-            ) : (
-              "Change Password"
-            )}
+            {isSubmitting ? "Changing Password..." : "Change Password"}
           </button>
         </form>
       </DialogContent>
