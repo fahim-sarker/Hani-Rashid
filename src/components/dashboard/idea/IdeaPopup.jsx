@@ -15,6 +15,7 @@ import useAxios from "@/components/Hooks/Api/UseAxios";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 export function IdeaPopup({
   refetchIdeas,
@@ -32,6 +33,7 @@ export function IdeaPopup({
   const queryClient = useQueryClient();
   const Axios = useAxios();
   const token = JSON.parse(localStorage.getItem("authToken"));
+  const naviagte = useNavigate();
 
   const {
     register,
@@ -120,6 +122,8 @@ export function IdeaPopup({
       setUploadedThumbnails([]);
       setUploadedDocs(null);
       setIsLoading(false);
+      setOpen(false);
+      naviagte("/dashboard/smallBusiness/timeline")
       if (setOpen) setOpen(false);
       refetchIdeas && refetchIdeas();
       queryClient.invalidateQueries(['/show-all-idea']);
