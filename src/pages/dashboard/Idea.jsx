@@ -1,9 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { IdeaPopup } from "@/components/dashboard/idea/IdeaPopup";
 import IdeaPost from "@/components/dashboard/idea/IdeaPost";
+import { useState } from "react";
 
 const Idea = () => {
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
 
   const refetchIdeas = () => {
     queryClient.invalidateQueries("ideas");
@@ -15,7 +17,8 @@ const Idea = () => {
         <p className="text-lg sm:text-2xl font-medium text-[#212B36]">
           Recently Posted Idea
         </p>
-        <IdeaPopup refetchIdeas={refetchIdeas} />
+        <IdeaPopup refetchIdeas={refetchIdeas} open={open}
+          setOpen={setOpen} />
       </div>
       <hr />
       <div className="bg-white mt-5 sm:mt-7 shadow-lg rounded-lg p-4 sm:p-7 space-y-8 sm:space-y-12">

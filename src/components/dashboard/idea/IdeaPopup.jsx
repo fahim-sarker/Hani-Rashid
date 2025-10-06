@@ -130,7 +130,6 @@ export function IdeaPopup({
 
     },
     onError: (error) => {
-      console.log(error);
       toast.error("Upload failed: " + error.message);
       setIsLoading(false);
     },
